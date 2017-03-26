@@ -175,14 +175,28 @@ bool FPRenderLayer::processHit( int index, float angle, Point3f hit, int tileInd
     CCASSERT( tileIndex < _mapInfo->tiles.size(), "Index out of range!" );
     
     int tag = _mapInfo->tiles[tileIndex].tag;
-//    bool continueProcessing = true;
-    bool continueProcessing = _mapInfo->triggers[tag].continueRaycast;
+    bool continueProcessing = ( planeIndex != getPlaneIndexForHeight( _fpsCamera->getPosition3D().y ) || tag != 0 );
+    
     if( _visitedPlanes[planeIndex][index] == 0 )
     {
         drawBlock( hit, tileIndex );
         _visitedPlanes[planeIndex][index] = 1;
     }
     return continueProcessing;
+}
+
+int FPRenderLayer::getPlaneIndexForHeight( float height )
+{
+    int index = -1;
+    for( int i = 0; i < _mapInfo->planes.size(); ++i )
+    {
+        if( _mapInfo->planes[i].height == height )
+        {
+            index = i;
+            break;
+        }
+    }
+    return index;
 }
 
 void FPRenderLayer::drawBlock( Point3f hit, int tileIndex )
@@ -197,7 +211,10 @@ void FPRenderLayer::drawBlock( Point3f hit, int tileIndex )
     else
     {
         cocos2d::Sprite3D* block = _blockManager->getBlock( tileIndex );
-        block->setPosition3D( point );
+        if( block )
+        {
+            block->setPosition3D( point );
+        }
     }
 }
 

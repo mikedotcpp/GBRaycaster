@@ -93,7 +93,7 @@ namespace mikedotcpp
          * TRUE  - Continue checking for hits along the path of this ray.
          * FALSE - Quit checking hits on this ray path and move to the next ray.
          */
-        virtual bool processHit( int index, float angle, mikedotcpp::Point3f hit, int tileIndex, int planeInde ) override;
+        virtual bool processHit( int index, float angle, mikedotcpp::Point3f hit, int tileIndex, int planeIndex ) override;
         
         /**
          * Adds the player camera to this layer with a custom field of view, near plane, and far plane. This layer
@@ -179,6 +179,11 @@ namespace mikedotcpp
          * tile hit per plane. This is reset each frame.
          */
         void resetVisitedPlanes();
+        
+        /**
+         * Returns the layer index for the height provided. 
+         */
+        int getPlaneIndexForHeight( float height );
         
         /**
          * Constructor/destructor

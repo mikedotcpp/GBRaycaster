@@ -18,7 +18,7 @@
 
 enum FaceDirection
 {
-    north, south, east, west, top, bottom
+    north, south, east, west, top, bottom, centerSpanNS, centerSpanEW
 };
 
 namespace mikedotcpp

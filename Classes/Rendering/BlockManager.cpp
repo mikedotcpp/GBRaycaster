@@ -204,12 +204,14 @@ void BlockManager::initSpriteBlock( cocos2d::Sprite3D& block, const mikedotcpp::
         if( !tileData.textureAll.empty() )
         {
             names = { tileData.textureAll, tileData.textureAll, tileData.textureAll,
-                      tileData.textureAll, tileData.textureAll, tileData.textureAll };
+                      tileData.textureAll, tileData.textureAll, tileData.textureAll,
+                      tileData.textureAll, tileData.textureAll };
         }
         else
         {
             names = { tileData.textureNorth, tileData.textureEast, tileData.textureSouth,
-                      tileData.textureWest, tileData.textureCeiling, tileData.textureFloor };
+                      tileData.textureWest, tileData.textureCeiling, tileData.textureFloor,
+                      tileData.textureCenterSpanNS, tileData.textureCenterSpanEW };
         }
         configureSpriteFaces( block, names );
     }
@@ -228,10 +230,11 @@ void BlockManager::configureSpriteBillboard( cocos2d::Sprite3D& block, const std
 
 void BlockManager::configureSpriteFaces( cocos2d::Sprite3D& block, const std::vector<std::string>& filenames )
 {
-    CCASSERT( filenames.size() == 6, "A filename is required for each side of a cube (6)." );
+    CCASSERT( filenames.size() == 8, "A filename is required for each side of a cube (8 including the center spaces)." );
     
     int directions[] = { FaceDirection::north, FaceDirection::east, FaceDirection::south,
-                         FaceDirection::west, FaceDirection::top, FaceDirection::bottom };
+                         FaceDirection::west, FaceDirection::top, FaceDirection::bottom,
+                         FaceDirection::centerSpanNS, FaceDirection::centerSpanEW };
     for( int i = 0; i < filenames.size(); ++i )
     {
         std::string textureName = filenames[i];
@@ -460,6 +463,16 @@ void BlockManager::orientSpriteFace( cocos2d::Sprite* face, int direction )
     {
         face->setRotation3D( cocos2d::Vec3( 90, 0, 0 ) );
         face->setPosition3D( cocos2d::Vec3( 0, -faceSize, 0 ) );
+    }
+    else if( direction == FaceDirection::centerSpanNS )
+    {
+        face->setRotation3D( cocos2d::Vec3( 0, 90, 0 ) );
+        face->setPosition3D( cocos2d::Vec3( 0, 0, 0 ) );
+    }
+    else if( direction == FaceDirection::centerSpanEW )
+    {
+        face->setRotation3D( cocos2d::Vec3( 0, 180, 0 ) );
+        face->setPosition3D( cocos2d::Vec3( 0, 0, 0 ) );
     }
 }
 

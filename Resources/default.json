@@ -21,13 +21,14 @@
             "comment": "An optional comment about the block, ignored by the engine. The index for this tile is considered 1 since the empty tile is implicit and reserved for tile index 0."
         },
         {
-            "textureAll": "Rock_by_shadowh3.png",
-            "tag": 0,
+            "textureCeiling": "Rock_by_shadowh3.png",
+            "tag": -1,
+            "tag": -1,
             "comment": "The TAG parameter matches this tile with a corresponding BEHAVIOR. 0=haltMove meaning that this tile will act like a barrier or a wall to players and is the only default behavior defined. This system is still not finalized."
         },
         {
-            "textureAll": "Rock_Ground_by_shadowh3.png",
-            "tag": 0,
+            "textureFloor": "Rock_Ground_by_shadowh3.png",
+            "tag": -1,
             "comment": "There are two different rendering paths for these maps: mesh-based and sprite-based. This is a sprite-based map that depends on a cube made up of sprite objects. Realtime lighting is not allowed in this rendering mode, but you can get better performance using it across a wider range of devices. The mesh-based rendering path allows for more interesting effects, but is much more demanding on the hardware."
         }
     ],

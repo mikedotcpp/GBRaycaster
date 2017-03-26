@@ -219,6 +219,20 @@ void MapInfo::loadJSONTiles( const rapidjson::Document& doc )
                 CCASSERT( obj["textureAll"].IsString(), "" );
                 tile.textureAll = obj["textureAll"].GetString();
             }
+            
+            if( obj.HasMember( "textureCenterSpanNS" ) )
+            {
+                CCASSERT( obj["textureCenterSpanNS"].IsString(), "" );
+                tile.textureCenterSpanNS = obj["textureCenterSpanNS"].GetString();
+            }
+            
+            if( obj.HasMember( "textureCenterSpanEW" ) )
+            {
+                CCASSERT( obj["textureCenterSpanEW"].IsString(), "" );
+                tile.textureCenterSpanEW = obj["textureCenterSpanEW"].GetString();
+            }
+            
+            
             //
             // NORMAL
             //

@@ -34,7 +34,7 @@ protected:
     /**
      * The extent of the observable world that is seen at any given moment.
      */
-    float _fieldOfView = 70.0f;
+    float _fieldOfView = 60.0f;
     
     /**
      * The plane closest to the player that cut the view frustum perpendicular to the viewing direction.

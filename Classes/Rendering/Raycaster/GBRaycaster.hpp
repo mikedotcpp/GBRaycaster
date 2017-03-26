@@ -80,7 +80,7 @@ namespace mikedotcpp
         /**
          * Loops through the tile map(s) checking for intersections.
          */
-        void traceRay( Point3f rayPoint, Point3f rayPointChange, Point3f increment );
+        void traceRay( Point3f rayPoint, Point3f rayPointChange, Point3f increment, float rayAngle );
         
         /**
          * Casts a number of rays from the playerPosition, at some starting rotation (represented by the camera
@@ -113,8 +113,7 @@ namespace mikedotcpp
          * Since that could be an absurd number of rays on today's displays, the default value is set to
          * the original Wolfenstein3D.
          */
-        int _rayCount = 320;
-//        int _rayCount = 640; // Use for faster platforms?
+        int _rayCount = 640; // Use for faster platforms?
         
         /**
          * Width, in pixels, of the tiles in this map.
@@ -139,7 +138,7 @@ namespace mikedotcpp
         /**
          * The extent of the observable world that is seen at any given moment. Measured in degrees.
          */
-        float _fov = 170.0f;
+        float _fov = 120.0f;
         
         /**
          */

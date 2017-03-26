@@ -100,10 +100,13 @@ void GBRaycaster::transposeAboutY( Point3f& vector )
 void GBRaycaster::castRays( Point3f playerPosition, float rotation )
 {
     assert( _delegate != nullptr && NO_DELEGATE_MSG );
+    
     transposeAboutY( playerPosition );
     Point2i playerTileCoord = tileCoordForPosition( playerPosition );
     Point3f playerTilePosition = tilePositionForCoord( playerTileCoord );
+    
     setPlayerTile( playerTileCoord, playerTilePosition );
+    
     for( int rayIndex = 0; rayIndex < _rayCount; rayIndex++ )
     {
         float rayAngle = rotation + _rayAngles.at( rayIndex );
@@ -111,7 +114,6 @@ void GBRaycaster::castRays( Point3f playerPosition, float rotation )
         rayAngle = ( rayAngle < 0 ) ? rayAngle + TWO_PI : rayAngle;
         castRay( rayIndex, rayAngle, playerTileCoord, playerTilePosition, playerPosition );
     }
-//    printf( "playerPosition: (%i, %i)  rotation: %f \n", playerTileCoord.x, playerTileCoord.y, rotation );
 }
 
 void GBRaycaster::setPlayerTile( Point2i playerTile, Point3f playerPosition )
@@ -208,11 +210,6 @@ void GBRaycaster::castRay( int stripIdx, float rayAngle, Point2i playerTileCoord
     traceRayHorizontally( rayAngle, raySinCos, playerTilePosition, playerPosition );
 }
 
-/*
- 
-    TODO: Evaluate whether or not this should actually be called traceRayHorizontally().
- 
- */
 void GBRaycaster::traceRayVertically( float rayAngle, Point3f raySinCos, Point3f playerTilePosition, Point3f playerPosition )
 {
     bool right = ( rayAngle > THREE_QUARTERS || rayAngle < ONE_QUARTER );
@@ -223,14 +220,9 @@ void GBRaycaster::traceRayVertically( float rayAngle, Point3f raySinCos, Point3f
     Point3f rayPoint( x, playerPosition.y + ( x - playerPosition.x ) * slope, 0.0f );
     float horizontalIncrement = right ? 0 : -_tileWidth;
     Point3f increment( horizontalIncrement, 0.0f, 0.0f );
-    traceRay( rayPoint, rayPointChange, increment );
+    traceRay( rayPoint, rayPointChange, increment, rayAngle );
 }
 
-/*
- 
-    TODO: Evaluate whether or not this should actually be called traceRayVertically().
- 
- */
 void GBRaycaster::traceRayHorizontally( float rayAngle, Point3f raySinCos, Point3f playerTilePosition, Point3f playerPosition )
 {
     bool up = ( rayAngle < MATH_PI && rayAngle > 0 );
@@ -241,22 +233,31 @@ void GBRaycaster::traceRayHorizontally( float rayAngle, Point3f raySinCos, Point
     Point3f rayPoint( playerPosition.x + (y - playerPosition.y) * slope, y, 0.0f );
     float verticalIncrement = up ? _tileHeight : 0;
     Point3f increment( 0, verticalIncrement, 0.0f );
-    traceRay( rayPoint, rayPointChange, increment );
+    traceRay( rayPoint, rayPointChange, increment, rayAngle );
 }
 
-/*
- 
-    TODO: Pass in the strip index and the angle.
- 
- */
-void GBRaycaster::traceRay( Point3f rayPoint, Point3f rayPointChange, Point3f increment )
+void GBRaycaster::traceRay( Point3f rayPoint, Point3f rayPointChange, Point3f increment, float rayAngle )
 {
+    int expectedX = 0, expectedY = 0;
     while( rayPoint.x >= 0 && rayPoint.x < _mapWidth * _tileWidth && rayPoint.y >= 0 && rayPoint.y < _mapHeight * _tileHeight )
     {
         int wallSub1 = MAX( 0, ( ( rayPoint.x + increment.x ) * _tileWidthDivisor ) );
         int wallSub2 = MIN( _mapHeight - 1, ( ( _mapHeight * _tileHeight - ( rayPoint.y + increment.y ) ) * _tileHeightDivisor ) );
         int index = getIndexFromMapCoord( Point2i( wallSub1, wallSub2 ) );
-        bool shouldReturn = true;
+        int returnCount = 0;
+        
+        // Check to see if the next tile encountered is outside the expected bounds.
+        if( expectedX != 0 || expectedY != 0 )
+        {
+            if( abs( wallSub1 - expectedX ) > 1 || abs( wallSub2 - expectedY ) > 1 )
+            {
+                return;
+            }
+        }
+        expectedX = wallSub1;
+        expectedY = wallSub2;
+        
+        // Draw sprites/meshes for each plane at this tile location.
         for( int i = 0; i < _planes.size(); ++i )
         {
             Plane plane = _planes[i];
@@ -264,28 +265,31 @@ void GBRaycaster::traceRay( Point3f rayPoint, Point3f rayPointChange, Point3f in
             if( tileIndex >= 0 )
             {
                 Point3f tilePos = tilePositionForCoord( wallSub1, wallSub2 );
+                
                 bool continueProcessing = _delegate->processHit( index,
-                                                                0.0f,
+                                                                rayAngle,
                                                                 Point3f( tilePos.y, plane.height, tilePos.x ),
                                                                 tileIndex,
                                                                 i );
-                shouldReturn = shouldReturn && !continueProcessing;
+                if( !continueProcessing )
+                {
+                    returnCount++;
+                }
             }
         }
-        if( shouldReturn )
+        
+        if( returnCount > 0 )
         {
             return;
         }
+        
         rayPoint.x += rayPointChange.x;
         rayPoint.y += rayPointChange.y;
     }
 }
 
-/*
- TODO: Evaluate whether or not this is actually necessary for the raycaster code. It looks like it may not be...in
-       fact it was contributing to a bug where all the tiles were not visible. See commit hash:
-    
-        453827dc6a5a8052ad48b85b4f45c780b9c2d32d
+/**
+ * DEPRECATED
  */
 Point2i GBRaycaster::getShortestMapCoord( Point3f playerPosition, Point2i vCoord, Point2i hCoord )
 {
@@ -305,11 +309,6 @@ int GBRaycaster::getIndexFromMapCoord( Point2i coord )
     int index = _mapWidth * coord.y + coord.x;
     return index;
 }
-
-/*
- TODO: We should add another file that stictly holds structs for tile property definitions. This should allow users
-       to override basic structs with their own functionality/defs and not have to change the raycaster code.
- */
 
 //==============================================================================
 //
@@ -381,41 +380,3 @@ void GBRaycaster::setDelegate( GBRaycasterInterface* delegate )
 {
     _delegate = delegate;
 }
-
-
-/*
- 
-    TODO: Move this function out of the GBRaycaster class. Also, since I am rendering maps with generalized arrays,
-          it will be necessary to find what Plane the player exists on first. This code will probably live in
-          the FPRenderLayer.
- 
- */
-
-/*
-void Raycaster::printWallPlanesVisited( MapCoord playerPosition )
-{
-    printf( "\n_visibleSet = [" );
-    int count = getMapSize();
-    int playerIndex = getIndexFromMapCoord( playerPosition );
-    for( int i = 0; i < count; ++i )
-    {
-        if( i%(int)_mapWidth == 0 )
-        {
-            printf( "\n" );
-        }
-        if( i == playerIndex )
-        {
-            printf( "*" );
-        }
-        else
-        {
-            printf( "%i", _wallPlaneVisited[i] );
-        }
-        if( i < count - 1 )
-        {
-            printf( "," );
-        }
-    }
-    printf( "\n]\n" );
-}
-*/

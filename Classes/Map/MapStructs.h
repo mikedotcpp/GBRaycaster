@@ -47,6 +47,12 @@ namespace mikedotcpp
         std::string textureAll     = "";
         
         /**
+         * This texture is placed at the center of the tile, oriented either North to South or East to West.
+         */
+        std::string textureCenterSpanNS = "";
+        std::string textureCenterSpanEW = "";
+        
+        /**
          * Sets the normal map texture to use on each side of the tile.
          */
         std::string normalNorth   = "";
