@@ -87,13 +87,18 @@ void MapInfo::loadJSONProperties( const rapidjson::Document& doc )
     const rapidjson::Value& props = doc[KEY_PROPERTIES];
     
     CCASSERT( props.IsObject(), "" );
-    CCASSERT( props.HasMember( "path" ), "" );
-    CCASSERT( props["path"].IsString(), "" );
-    path = props["path"].GetString();
     
-    CCASSERT( props.HasMember( "name" ), "" );
-    CCASSERT( props["name"].IsString(), "" );
-    name = props["name"].GetString();
+    if( props.HasMember( "path" ), "" )
+    {
+        CCASSERT( props["path"].IsString(), "" );
+        path = props["path"].GetString();
+    }
+    
+    if( props.HasMember( "name" ), "" )
+    {
+        CCASSERT( props["name"].IsString(), "" );
+        name = props["name"].GetString();
+    }
     
     CCASSERT( props.HasMember( "tileSize" ), "" );
     CCASSERT( props["tileSize"].IsInt(), "" );
