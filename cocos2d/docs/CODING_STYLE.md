@@ -1518,9 +1518,6 @@ vector<string> v{"foo", "bar"};
 // constructor is explicit. You may choose to use either form.
 vector<string> v = {"foo", "bar"};
 
-// Maps take lists of pairs. Nested braced-init-lists work.
-map<int, string> m = {{1, "one"}, {2, "2"}};
-
 // braced-init-lists can be implicitly converted to return types.
 vector<int> testFunction() {
   return {1, 2, 3};
