@@ -9,10 +9,7 @@ All of the code is freely available from my GitHub [page](https://github.com/mik
 The basic idea is to fire a bunch of rays from the player and draw whatever those rays hit. The number of rays to fire is equal to the number of vertical columns on screen (the pixel width of
 the screen). For each ray that hits an object in the world (like a wall), a scaled vertical strip of that object is drawn.
 
-DRAW AN IMAGE OF RAYCASTING HERE!
-
-In this early experiement, I added a long delay during rendering so it's easier to see the screen filling from right to left, one vertical strip at a time. Vertical strips were created using
-1 pixel wide quads.
+In this early experiement, vertical strips were created using 1-pixel wide quads:
 
 ![Raycasting animation](Resources/out.gif)
 
@@ -45,7 +42,7 @@ happen if I could assign a 3D mesh to the `Sprite3D` container object? Video bel
 This demo still utilizes the same raycasting technique from `CocosWolf3D`, but renders the results in a vastly different way. There's a lot going on here: 
 
 ### Instancing 
-I am using a technology called [instancing](https://www.khronos.org/registry/OpenGL-Refpages/es3.0/html/glDrawElementsInstanced.xhtml) to draw many similarly 
+I am using a technique called [instancing](https://www.khronos.org/registry/OpenGL-Refpages/es3.0/html/glDrawElementsInstanced.xhtml) to draw many similarly 
 textured objects with little cost. The objects themselves are proper 3D meshes (of cubes) which are assigned to the `Sprite3D` container object at load time. Like the sprite-based version, these 
 cubes can define unique textures for all 6 faces. *Note*: instancing requires an OpenGL ES extension for the 2.0 API and is included in 3.0 and above, therefore it may not be available on some
 hardware.
