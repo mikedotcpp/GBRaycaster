@@ -14,7 +14,7 @@ DRAW AN IMAGE OF RAYCASTING HERE!
 In this early experiement, I added a long delay during rendering so it's easier to see the screen filling from right to left, one vertical strip at a time. Vertical strips were created using
 1 pixel wide quads.
 
-![Raycasting animation](http://localhost:4000/Resources/out.gif)
+![Raycasting animation](https://github.com/mikedotcpp/GBRaycaster/blob/master/Resources/out.gif)
 
 While a promising start, I wanted to have the option of rendering floors/ceilings and be able to easily use some nice features of cocos - like actions, particle effects, etc. I started experimenting
 with a slightly different approach...
