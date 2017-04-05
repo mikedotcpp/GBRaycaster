@@ -1,1 +1,3 @@
+name: Raycaster
+description: An implementation of the classic raycast rendering algorithm for Cocos2d-x.
 theme: jekyll-theme-merlot
